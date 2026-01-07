@@ -7,10 +7,10 @@ const authMiddleware = require('../middleware/authMiddleware');
 router.post('/register', authController.register);
 router.post('/login', authController.login);
 
-// 2. GET ALL USERS (This was missing! Fixes "Loading...")
+// 2. GET ALL USERS (This was missing! Fixes Admin "Loading...")
 router.get('/users', authMiddleware, authController.getAllUsers);
 
-// 3. DELETE USER (Fixes the delete button)
+// 3. DELETE USER
 router.delete('/users/:id', authMiddleware, authController.deleteUser);
 
 module.exports = router;
