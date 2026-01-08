@@ -10,6 +10,7 @@ const os = require('os');
 // Routes
 const authRoutes = require('./routes/authRoutes');
 const listingRoutes = require('./routes/listingRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 const server = http.createServer(app);
@@ -27,6 +28,7 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/listings', listingRoutes);
+app.use('/api/users', userRoutes);
 
 // Database Init
 async function initDB() {
@@ -35,6 +37,20 @@ async function initDB() {
         await db.exec(`CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, email TEXT UNIQUE, password_hash TEXT, role TEXT DEFAULT 'user')`);
         await db.exec(`CREATE TABLE IF NOT EXISTS listings (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, title TEXT, price REAL, description TEXT, image_url TEXT, FOREIGN KEY(user_id) REFERENCES users(id))`);
         await db.exec(`CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, room TEXT, sender_id INTEGER, sender_name TEXT, content TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)`);
+        // In backend/server.js inside initDB()
+        await db.exec(`
+            CREATE TABLE IF NOT EXISTS listings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                title TEXT,
+                price REAL,
+                description TEXT,
+                image_url TEXT,
+                lat REAL, 
+                lng REAL,
+                FOREIGN KEY(user_id) REFERENCES users(id)
+            )
+        `);
         console.log("✅ Database Tables Verified!");
     } catch (error) { console.error("❌ DB Init Failed:", error); }
 }
